@@ -33,7 +33,7 @@ AVLNodePtr newNode(int key);
 AVLNodePtr rightRotate(AVLNodePtr y);
 AVLNodePtr leftRotate(AVLNodePtr x);
 int getBalance(AVLNodePtr N);
-void balanceTree(AVLNodePtr *node);
+void balanceTree(AVLNodePtr *node,int key);
 void insert(AVLNodePtr *node, int key);
 void preOrder(AVLNodePtr root);
 AVLNodePtr search(AVLNodePtr root, int key);
@@ -52,7 +52,9 @@ int main()
     AVLNodePtr root = NULL;
 
 	insertFromFile(&root);
-	printf("# of rotations: %d",numberOfRotations);
+	printf("\n");
+	preOrder(root);
+	printf("\n# of rotations: %d",numberOfRotations);
 	printf("\n# of comparisons: %d",numberOfComparisons);
 	
  
@@ -238,28 +240,28 @@ int getDf(AVLNodePtr node)
 }
 
 // Balance the tree if necessary
-void balanceTree(AVLNodePtr *node)
+void balanceTree(AVLNodePtr *node,int key)
 {
 	
     int balance = getDf(*node);
 
     // Left Left 
-    if (balance > 1 && getDf((*node)->left) >= 0)
+    if (balance > 1 && (*node)->left->key>key )
         *node = rightRotate(*node);
 
     // Right Right 
-    if (balance < -1 && getDf((*node)->right) <= 0)
+    else if (balance < -1 && (*node)->right->key<key )
         *node = leftRotate(*node);
 
     // Left Right 
-    if (balance > 1 && getDf((*node)->left) < 0)
+    else if (balance > 1 && (*node)->left->key < key  )
     {
         (*node)->left =  leftRotate((*node)->left);
         *node = rightRotate(*node);
     }
 
     // Right Left 
-    if (balance < -1 && getDf((*node)->right) > 0)
+    else if (balance < -1 && (*node)->right->key > key  )
     {
         (*node)->right = rightRotate((*node)->right);
         *node = leftRotate(*node);
@@ -272,8 +274,9 @@ void insert(AVLNodePtr *node, int key)
    
     if (*node == NULL)
     {	
-	numberOfComparisons++;					//buraya numberOfComparison++ koymicam sanirim
+//	numberOfComparisons++;					//buraya numberOfComparison++ koymicam sanirim
         *node = newNode(key);
+        printf("%d eklendi ",key);
         return;
     }
 
@@ -291,15 +294,17 @@ void insert(AVLNodePtr *node, int key)
 	}
     
 	
-	else
+	else {
+		numberOfComparisons++;
         return; 
+	}
 
     
     (*node)->height = 1 + max(height((*node)->left),
                               height((*node)->right));
 
     // Balance the tree 
-    balanceTree(node);
+    balanceTree(node,key);
 }
 
 
@@ -433,7 +438,7 @@ void deleteNode(AVLNodePtr *root, int key)
     (*root)->height = 1 + max(height((*root)->left), height((*root)->right));
  
     // Balance the tree if it is necessary
-    balanceTree(root);
+    balanceTree(root,key);
 }
 
 //find the minimum key of the given tree and return it

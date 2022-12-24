@@ -2,6 +2,14 @@
 #include <stdlib.h>
 
 // Ilker Keklik 150120074 balance tree de sikinti var gibi (hallettim)
+
+FILE *readFilePtr; 
+
+FILE *writeFilePtr; 
+
+int numberOfRotations;
+int numberOfComparisons;
+
 typedef struct AVLNode
 {
     int key;
@@ -11,6 +19,10 @@ typedef struct AVLNode
 } AVLNode;
 
 typedef AVLNode* AVLNodePtr;
+
+typedef enum boolean{
+	true=1
+}boolean;
 
 //Prototypes
 AVLNodePtr findMax(AVLNodePtr root);
@@ -26,27 +38,35 @@ void insert(AVLNodePtr *node, int key);
 void preOrder(AVLNodePtr root);
 AVLNodePtr search(AVLNodePtr root, int key);
 void deleteNode(AVLNodePtr *root, int key);
-
+void insertFromFile(AVLNodePtr *root);
 
 int main()
 {
+	numberOfRotations = 0;
+	numberOfComparisons = 0;
+	readFilePtr = fopen("150120074_p2_input.txt","r");
+
+	writeFilePtr = fopen("150120074_p2_output.txt","w");
+	
+	
     AVLNodePtr root = NULL;
-	/*insert(&root, 10);
-    insert(&root, 15);
-    insert(&root, 9);
-    insert(&root, 20);
-    insert(&root, 8);
-    insert(&root, 16);
-    preOrder(root);*/
+
+	insertFromFile(&root);
+	printf("# of rotations: %d",numberOfRotations);
+	printf("\n# of comparisons: %d",numberOfComparisons);
+	
  
- 
+ /*
     printf("Inserting keys: 10, 20, 30, 40, 50, 25\n");
+   
     insert(&root, 10);
     insert(&root, 20);
     insert(&root, 30);
     insert(&root, 40);
     insert(&root, 50);
     insert(&root, 25);
+	
+   insertFromFile(&root);
  
     printf("\nPreorder traversal of the tree: ");
     preOrder(root);
@@ -95,24 +115,63 @@ int main()
     printf("%d\n", max->key);
  
  
+ */
+ 
+ 
+ 
+ fclose(readFilePtr);
+ fclose(writeFilePtr);
+ 
  
     return 0;
 }
 
 
-
+void insertFromFile(AVLNodePtr *root){
+		if(readFilePtr == NULL){
+			printf("Error while reading file!");
+			return;
+		}
+		
+		int key;
+		
+		while(true){
+			 boolean result = fscanf(readFilePtr,"%d",&key);
+			 
+			if(result!=true){
+				
+				break;
+			}
+			
+			insert(root,key);
+			printf("%d inserted\n",key);
+			
+		}
+		
+		
+		
+		
+		
+		
+}
 
 
 
 //search functions searchs the given value in the tree whose root is given
 AVLNodePtr search(AVLNodePtr root, int key)
 {
-    if (root == NULL || root->key == key)
-       return root;
+    if (root == NULL || root->key == key){
+    numberOfComparisons++;
+	return root;	
+	}
+       
+       
     
-    if (root->key < key)
+    if (root->key < key){
+    	numberOfComparisons++;
        return search(root->right, key);
- 
+	}
+ 	numberOfComparisons++;
     return search(root->left, key);
 }
 
@@ -149,7 +208,7 @@ AVLNodePtr rightRotate(AVLNodePtr a)
 
     b->right = a;
     a->left = c;
-
+	numberOfRotations++;
     a->height = max(height(a->left), height(a->right))+1;
     b->height = max(height(b->left), height(b->right))+1;
 
@@ -166,7 +225,7 @@ AVLNodePtr leftRotate(AVLNodePtr a)
     a->right = c;
     a->height = max(height(a->left), height(a->right))+1;
     b->height = max(height(b->left), height(b->right))+1;
-
+numberOfRotations++;
     return b;
 }
 
@@ -181,27 +240,25 @@ int getDf(AVLNodePtr node)
 // Balance the tree if necessary
 void balanceTree(AVLNodePtr *node)
 {
-    // Get the balance factor of this ancestor
+	
     int balance = getDf(*node);
-    // If this node becomes unbalanced, then
-    // there are 4 cases
 
-    // Left Left Case
+    // Left Left 
     if (balance > 1 && getDf((*node)->left) >= 0)
         *node = rightRotate(*node);
 
-    // Right Right Case
+    // Right Right 
     if (balance < -1 && getDf((*node)->right) <= 0)
         *node = leftRotate(*node);
 
-    // Left Right Case
+    // Left Right 
     if (balance > 1 && getDf((*node)->left) < 0)
     {
         (*node)->left =  leftRotate((*node)->left);
         *node = rightRotate(*node);
     }
 
-    // Right Left Case
+    // Right Left 
     if (balance < -1 && getDf((*node)->right) > 0)
     {
         (*node)->right = rightRotate((*node)->right);
@@ -214,16 +271,27 @@ void insert(AVLNodePtr *node, int key)
 {
    
     if (*node == NULL)
-    {
+    {	
+	numberOfComparisons++;					//buraya numberOfComparison++ koymicam sanirim
         *node = newNode(key);
         return;
     }
 
-    if (key < (*node)->key)
-        insert(&(*node)->left, key);
-    else if (key > (*node)->key)
+    if (key < (*node)->key){
+    	numberOfComparisons++;
+    	insert(&(*node)->left, key);
+	}
+        
+        
+        
+    else if (key > (*node)->key){
+    	numberOfComparisons++;
+    	
         insert(&(*node)->right, key);
-    else
+	}
+    
+	
+	else
         return; 
 
     
@@ -300,16 +368,22 @@ void insert(AVLNodePtr *node, int key)
 //deletes the given key from the tree if it is exist
 void deleteNode(AVLNodePtr *root, int key)
 {
-    if (*root == NULL)
+    if (*root == NULL){
+    	numberOfComparisons++;
         return;//
+	}
  
     
-    else if (key < (*root)->key)
+    else if (key < (*root)->key){
+    	numberOfComparisons++;
         deleteNode(&(*root)->left, key);
+	}
  
 
-    else if (key > (*root)->key)
+    else if (key > (*root)->key){
+    	numberOfComparisons++;
         deleteNode(&(*root)->right, key);
+	}
  
     //key is the root's key or we found the key to be deleted
     else

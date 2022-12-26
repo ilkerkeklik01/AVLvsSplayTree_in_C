@@ -3,7 +3,8 @@
 
 // Ilker Keklik 150120074 balance tree de sikinti var gibi (hallettim)
 
-FILE *readFilePtr; 
+FILE *readFilePtr1; 
+FILE *readFilePtr2; 
 
 FILE *writeFilePtr; 
 
@@ -38,26 +39,47 @@ void insert(AVLNodePtr *node, int key);
 void preOrder(AVLNodePtr root);
 AVLNodePtr search(AVLNodePtr root, int key);
 void deleteNode(AVLNodePtr *root, int key);
-void insertFromFile(AVLNodePtr *root);
-
+void insertFromFile(AVLNodePtr *root,FILE* file);
+void preOrderToFile(AVLNodePtr root);
+void writeTheOutputFile(AVLNodePtr root,int a);
 int main()
 {
 	numberOfRotations = 0;
 	numberOfComparisons = 0;
-	readFilePtr = fopen("150120074_p2_input.txt","r");
+	readFilePtr1 = fopen("150120074_p2_input1.txt","r");
+	readFilePtr2 = fopen("150120074_p2_input2.txt","r");
 
-	writeFilePtr = fopen("150120074_p2_output.txt","w");
+	writeFilePtr = fopen("150120074_p2_output.txt","a");
 	
 	
     AVLNodePtr root = NULL;
 
-	insertFromFile(&root);
+	fprintf(writeFilePtr,"\nAVL TREE\n");
+	printf("AVL Tree");
+	printf("\nTest1\n");
+	insertFromFile(&root,readFilePtr1);
 	printf("\n");
 	preOrder(root);
 	printf("\n# of rotations: %d",numberOfRotations);
 	printf("\n# of comparisons: %d",numberOfComparisons);
+	printf("\n Cost: %d",(numberOfRotations+numberOfComparisons));
 	
+	writeTheOutputFile(root,1);
+	
+	numberOfRotations=0;
+	numberOfComparisons=0;
+	root=NULL;
  
+ 	printf("AVL Tree");
+	printf("n\nTest2\n");
+	insertFromFile(&root,readFilePtr2);
+	printf("\n");
+	preOrder(root);
+	printf("\n# of rotations: %d",numberOfRotations);
+	printf("\n# of comparisons: %d",numberOfComparisons);
+	printf("\n Cost: %d",(numberOfRotations+numberOfComparisons));
+ 
+ writeTheOutputFile(root,2);
  /*
     printf("Inserting keys: 10, 20, 30, 40, 50, 25\n");
    
@@ -121,16 +143,45 @@ int main()
  
  
  
- fclose(readFilePtr);
+ fclose(readFilePtr1);
+ fclose(readFilePtr2);
  fclose(writeFilePtr);
  
  
     return 0;
 }
+void writeTheOutputFile(AVLNodePtr root,int a){
+	
+	if(writeFilePtr==NULL){
+		printf("Error while writing file");
+	return ;
+	}
+	
+	
+	fprintf(writeFilePtr,"Test %d\n",a);
+	preOrderToFile(root);
+	
+    fprintf(writeFilePtr,"\n");
+    
+    	fprintf(writeFilePtr,"\n# of rotations: %d",numberOfRotations);
+	fprintf(writeFilePtr,"\n# of comparisons: %d",numberOfComparisons);
+	fprintf(writeFilePtr,"\n Cost: %d\n",(numberOfRotations+numberOfComparisons));
 
+	
+	
+}
+void preOrderToFile(AVLNodePtr root){
+	
+	if(root!=NULL){
+		fprintf(writeFilePtr,"%d ", root->key);
+		preOrderToFile(root->left);
+		preOrderToFile(root->right);
+	}
+	
+}
 
-void insertFromFile(AVLNodePtr *root){
-		if(readFilePtr == NULL){
+void insertFromFile(AVLNodePtr *root,FILE* file){
+		if(file == NULL){
 			printf("Error while reading file!");
 			return;
 		}
@@ -138,7 +189,7 @@ void insertFromFile(AVLNodePtr *root){
 		int key;
 		
 		while(true){
-			 boolean result = fscanf(readFilePtr,"%d",&key);
+			 boolean result = fscanf(file,"%d",&key);
 			 
 			if(result!=true){
 				
@@ -300,8 +351,7 @@ void insert(AVLNodePtr *node, int key)
 	}
 
     
-    (*node)->height = 1 + max(height((*node)->left),
-                              height((*node)->right));
+    (*node)->height = 1 + max(height((*node)->right),height((*node)->left));
 
     // Balance the tree 
     balanceTree(node,key);

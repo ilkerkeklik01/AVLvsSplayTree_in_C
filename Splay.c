@@ -2,6 +2,19 @@
 #include <stdlib.h>
 
 
+FILE *readFilePtr1; 
+FILE *readFilePtr2; 
+
+FILE *writeFilePtr; 
+
+int numberOfRotations;
+int numberOfComparisons;
+
+typedef enum boolean{
+	true=1
+}boolean;
+
+
 typedef struct SplayNode {
   int key;
   struct SplayNode *left;
@@ -21,19 +34,57 @@ int max(int a, int b);
 SplayNodePtr findMax(SplayNodePtr root);
 SplayNodePtr findMin(SplayNodePtr root);
 void preOrder(SplayNodePtr root);
-
-
+void insertFromFile(SplayNodePtr *root,FILE* file);
+void preOrderToFile(SplayNodePtr root);
+void writeTheOutputFile(SplayNodePtr root,int a);
 int main(){
+	
+	numberOfRotations = 0;
+	numberOfComparisons = 0;
+	readFilePtr1 = fopen("150120074_p2_input1.txt","r");
+	readFilePtr2 = fopen("150120074_p2_input2.txt","r");
+
+	writeFilePtr = fopen("150120074_p2_output.txt","a");
 	
 	SplayNodePtr root = NULL;
 	
+	fprintf(writeFilePtr,"\nSPLAY TREE\n");
 	
+		insertFromFile(&root,readFilePtr1);
+	printf("Splay Tree ");
+	printf("\nTest1\n");	
+	printf("\n");
+	preOrder(root);
+	printf("\n# of rotations: %d",numberOfRotations);
+	printf("\n# of comparisons: %d",numberOfComparisons);
+	printf("\n Cost: %d\n",(numberOfRotations+numberOfComparisons));
+
+	writeTheOutputFile(root,1);
+	
+	numberOfRotations=0;
+	numberOfComparisons=0;
+	root = NULL;
+	
+	insertFromFile(&root,readFilePtr2);
+	printf("Splay Tree ");
+	printf("\nTest2\n");	
+	printf("\n");
+	preOrder(root);
+	printf("\n# of rotations: %d",numberOfRotations);
+	printf("\n# of comparisons: %d",numberOfComparisons);
+	printf("\n Cost: %d\n",(numberOfRotations+numberOfComparisons));
+
+	writeTheOutputFile(root,2);
+	
+	
+
+/*	
 	root = newNode(6);
 	root->right = newNode(7);
 	root->right->right = newNode(8);
 	
 	splay(&root,8);
-	
+	*/
 	/*
 	insert(&root,25);
 	insert(&root,12);
@@ -46,15 +97,70 @@ int main(){
 	*/
 	
 	
-	
-	preOrder(root);
+	fclose(writeFilePtr);
+	fclose(readFilePtr1);
+	fclose(readFilePtr2);
 	
 	return 0;
 }
 
+void writeTheOutputFile(SplayNodePtr root,int a){
+	
+	if(writeFilePtr==NULL){
+		printf("Error while writing file");
+	return ;
+	}
+	
+	
+	fprintf(writeFilePtr,"Test %d\n",a);
+	preOrderToFile(root);
+	
+    fprintf(writeFilePtr,"\n");
+    
+    	fprintf(writeFilePtr,"\n# of rotations: %d",numberOfRotations);
+	fprintf(writeFilePtr,"\n# of comparisons: %d",numberOfComparisons);
+	fprintf(writeFilePtr,"\n Cost: %d\n",(numberOfRotations+numberOfComparisons));
+
+	
+	
+}
+void preOrderToFile(SplayNodePtr root){
+	
+	if(root!=NULL){
+		fprintf(writeFilePtr,"%d ", root->key);
+		preOrderToFile(root->left);
+		preOrderToFile(root->right);
+	}
+	
+}
+
+void insertFromFile(SplayNodePtr *root,FILE* file){
+		if(file == NULL){
+			printf("Error while reading file!");
+			return;
+		}
+		
+		int key;
+		
+		while(true){
+			 boolean result = fscanf(file,"%d",&key);
+			 
+			if(result!=true){
+				
+				break;
+			}
+			
+			insert(root,key);
+			printf("%d inserted\n",key);
+			
+		}		
+}
+
+
 void insert(SplayNodePtr *root, int key) {
 
   if (*root == NULL) {
+  	//numberOfComparisons++;
     *root = newNode(key);
     return;
   }
@@ -62,14 +168,20 @@ void insert(SplayNodePtr *root, int key) {
  
   if (key < (*root)->key) {
     insert(&((*root)->left), key);
+  numberOfComparisons++;
   } else if(key > (*root)->key){
     insert(&((*root)->right), key);
-  }else{
+  numberOfComparisons++;
+  }
+  else{
+  	numberOfComparisons++;
+  	printf("%d eklenmedi ",key);
   	return;
   }
 
  
   splay(root, key);
+  
 }
 
 
@@ -119,6 +231,7 @@ void splay(SplayNodePtr *root, int key) {
 						 
 						 //rootun solunun solunun keyi, key e esit degilse
 						 else{
+						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
 						 	splay(&((*root)->left->left),key);
 						 }
 			 			
@@ -155,6 +268,7 @@ void splay(SplayNodePtr *root, int key) {
 						 
 						 //rootun solunun sagiinin keyi, key e esit degilse
 						 else{
+						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
 						 	splay(&((*root)->left->right) ,key);
 						 }
 				 	
@@ -207,6 +321,7 @@ void splay(SplayNodePtr *root, int key) {
 						 
 						 //rootun saginin solunun keyi, key e esit degilse
 						 else{
+						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
 						 	splay(&((*root)->right->left),key);
 						 }
 			 			
@@ -243,6 +358,7 @@ void splay(SplayNodePtr *root, int key) {
 						 
 						 //rootun saginin sagiinin keyi, key e esit degilse
 						 else{
+						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 						 	splay(&((*root)->right->right) ,key);
 						 }
 				 	
@@ -275,7 +391,7 @@ SplayNodePtr rightRotate(SplayNodePtr a)
 
     b->right = a;
     a->left = c;
-
+numberOfRotations++;
     return b;
 }
 
@@ -286,7 +402,7 @@ SplayNodePtr leftRotate(SplayNodePtr a)
 
     b->left = a;
     a->right = c;
-
+	numberOfRotations++;
     return b;
 }
 //find the minimum key of the given tree and return it

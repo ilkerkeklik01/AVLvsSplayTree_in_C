@@ -2,11 +2,13 @@
 #include <stdlib.h>
 
 
+//Ilker Keklik 150120074
+
 FILE *readFilePtr1; 
 FILE *readFilePtr2; 
 
 FILE *writeFilePtr; 
-
+int depth;
 int numberOfRotations;
 int numberOfComparisons;
 
@@ -37,8 +39,11 @@ void preOrder(SplayNodePtr root);
 void insertFromFile(SplayNodePtr *root,FILE* file);
 void preOrderToFile(SplayNodePtr root);
 void writeTheOutputFile(SplayNodePtr root,int a);
+void insert(SplayNodePtr *root, int key);
+int searchAndGetDepth(SplayNodePtr root, int key);
+void insertAndSplay(SplayNodePtr *root,int key);
 int main(){
-	
+	depth=0;
 	numberOfRotations = 0;
 	numberOfComparisons = 0;
 	readFilePtr1 = fopen("150120074_p2_input1.txt","r");
@@ -104,6 +109,12 @@ int main(){
 	return 0;
 }
 
+void insertAndSplay(SplayNodePtr *root,int key){//en son boyle yaptım hata aldım
+    insert(root,key);
+    splay(root,key);
+}
+
+
 void writeTheOutputFile(SplayNodePtr root,int a){
 	
 	if(writeFilePtr==NULL){
@@ -134,6 +145,30 @@ void preOrderToFile(SplayNodePtr root){
 	
 }
 
+int searchAndGetDepth(SplayNodePtr root, int key)
+{
+    while( root->key != key){
+          if(root==NULL){
+              if("beklenmedik hata");
+              return -1;
+          }
+          if(key>root->key){
+              root=root->right;
+              depth++;
+          }else{
+
+
+                  root=root->left;
+                  depth++;
+          }
+
+    }
+    return depth;
+
+
+}
+
+
 void insertFromFile(SplayNodePtr *root,FILE* file){
 		if(file == NULL){
 			printf("Error while reading file!");
@@ -150,7 +185,7 @@ void insertFromFile(SplayNodePtr *root,FILE* file){
 				break;
 			}
 			
-			insert(root,key);
+			insertAndSplay(root,key);
 			printf("%d inserted\n",key);
 			
 		}		
@@ -159,29 +194,24 @@ void insertFromFile(SplayNodePtr *root,FILE* file){
 
 void insert(SplayNodePtr *root, int key) {
 
-  if (*root == NULL) {
-  	//numberOfComparisons++;
-    *root = newNode(key);
-    return;
-  }
+    if (*root == NULL) {
+    	//numberOfComparisons++;
+        *root = newNode(key);
+        return;
+    }
 
- 
-  if (key < (*root)->key) {
-    insert(&((*root)->left), key);
-  numberOfComparisons++;
-  } else if(key > (*root)->key){
-    insert(&((*root)->right), key);
-  numberOfComparisons++;
-  }
-  else{
-  	numberOfComparisons++;
-  	printf("%d eklenmedi ",key);
-  	return;
-  }
 
- 
-  splay(root, key);
-  
+    if (key < (*root)->key) {
+        insert(&((*root)->left), key);
+        numberOfComparisons++;
+    } else if(key > (*root)->key){
+        insert(&((*root)->right), key);
+    	numberOfComparisons++;
+	}else{
+		numberOfComparisons++;
+        return;
+    }
+
 }
 
 
@@ -190,194 +220,223 @@ void insert(SplayNodePtr *root, int key) {
 
 // Splay the tree to bring the given node to the root
 void splay(SplayNodePtr *root, int key) {
-	if((*root)==NULL){
-		return ;
-	}
-  while ((*root)->key != key) {
-    
-    //key rootun keyinden kuculse key soldaysa
-    if(key < (*root)->key){
- 			
- 			if((*root)->left ==NULL){
- 				return;
-			 }else if((*root)->left->key == key){
-			 	
-			 	(*root) = rightRotate(*root);
-			 	return;//burayi sonradan koydum
-			 }
-			 
-			 //iki durum cgkar
-			 
-			 //rootun leftinin keyi ,keyden buyukse
-			 if((*root)->left->key>key){
-			 	
-			 	//rootun solunun solu null ise
-			 	if((*root)->left->left ==NULL){
-			 		return ;
-				 }	
-			 		//rootun solunun solu null degil ise
-			 		else {
-			 			
-			 			
-			 			
-			 			//rootun solunun solunun keyi, key e esitse
-			 			//Zig zig right right rotations
-			 			if((*root)->left->left->key==key){
-			 				
-			 				(*root) = rightRotate(*root);
-			 				(*root) = rightRotate(*root);
-			 				
-						 }
-						 
-						 //rootun solunun solunun keyi, key e esit degilse
-						 else{
-						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
-						 	splay(&((*root)->left->left),key);
-						 }
-			 			
-			 			
-			 			
-			 			
-			 			
-					 }
-			 
-			 
-			 }
-			 
-			 
-			 //rootun leftinin keyi ,keyden kucukse
-			 else if((*root)->left->key <key){
-			 	
-			 	//rootun solunun sagi null ise
-			 	if((*root)->left->right ==NULL){
-			 		return ;
-				 }
-				 //rootun solunun saci null degil ise
-				 else {
-				 	
-				 	
-				 	
-				 	
-				 	
-				 	//rootun solunun saginin keyi, key e esitse
-			 			if((*root)->left->right->key==key){
-			 				
-			 				(*root)->left = leftRotate((*root)->left);
-			 				*root = rightRotate(*root);
-						 }
-						 
-						 //rootun solunun sagiinin keyi, key e esit degilse
-						 else{
-						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
-						 	splay(&((*root)->left->right) ,key);
-						 }
-				 	
-				 	
-				 	
-				 	
-				 	
-				 }
-				 
-				 
-			 }
-			 
- 			
- 			
-		 }//ilk durum bitti
-		 //key rootun keyinden buyukse key sagdaysa
-		 else if(key > (*root)->key){
- 			//rootun sagi nulsa
- 			if((*root)->right ==NULL){
- 				return;
-			 }//rootun saginin keyi keye esitse
-			 else if((*root)->right->key == key){
-			 	
-			 	(*root) = leftRotate(*root);
-			 	return;//burayi sonradan koydum
-			 }
-			 
-			 //iki durum cikar
-			 
-			 //rootun rightinin keyi ,keyden buyukse key solda
-			 if((*root)->right->key>key){
-			 	
-			 	//rootun saginin solu null ise
-			 	if((*root)->right->left ==NULL){
-			 		return ;
-				 }	
-			 		//rootun saginin solu null degil ise
-			 		else {
-			 			
-			 			
-			 			
-			 			//rootun saginin solunun keyi, key e esitse
-			 			//Zig zag right left rotations
-			 			if((*root)->left->left->key==key){
-			 				
-			 				(*root)->right = rightRotate((*root)->right);
-			 				(*root) = leftRotate(*root);
-			 				
-						 }
-						 
-						 //rootun saginin solunun keyi, key e esit degilse
-						 else{
-						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ");
-						 	splay(&((*root)->right->left),key);
-						 }
-			 			
-			 			
-			 			
-			 			
-			 			
-					 }
-			 
-			 
-			 }
-			 
-			 
-			 //rootun rightinin keyi ,keyden kucukse key sagda
-			 else if((*root)->right->key <key){
-			 	
-			 	//rootun saginin sagi null ise
-			 	if((*root)->right->right ==NULL){
-			 		return ;
-				 }
-				 //rootun saginin sagi null degil ise
-				 else {
-				 	
-				 	
-				 	
-				 	
-				 	
-				 	//rootun saginin saginin keyi, key e esitse zig zig left left
-			 			if((*root)->right->right->key==key){
-			 				
-			 				(*root) = leftRotate((*root));
-			 				*root = leftRotate(*root);
-						 }
-						 
-						 //rootun saginin sagiinin keyi, key e esit degilse
-						 else{
-						 	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-						 	splay(&((*root)->right->right) ,key);
-						 }
-				 	
-				 	
-				 	
-				 	
-				 	
-				 }
-				 
-				 
-			 }
-			 
- 			
- 			
-		 }
-    
-  }//while end
-  
-  
+    if((*root)==NULL){
+        return ;
+    }
+    while ((*root)->key != key) {
+
+        //key rootun keyinden kuculse key soldaysa
+        if(key < (*root)->key){
+
+            if((*root)->left ==NULL){
+                return;
+            }else if((*root)->left->key == key){
+
+                (*root) = rightRotate(*root);
+                return;//burayi sonradan koydum
+            }
+
+            //iki durum cgkar
+
+            //rootun leftinin keyi ,keyden buyukse
+            if((*root)->left->key>key){
+
+                //rootun solunun solu null ise
+                if((*root)->left->left ==NULL){
+                    return ;
+                }
+                    //rootun solunun solu null degil ise
+                else {
+
+
+
+                    //rootun solunun solunun keyi, key e esitse
+                    //Zig zig right right rotations
+                    if((*root)->left->left->key==key){
+
+                        (*root) = rightRotate(*root);
+                        (*root) = rightRotate(*root);
+
+                    }
+
+                        //rootun solunun solunun keyi, key e esit degilse
+                    else{
+                        depth=0;
+                        depth= searchAndGetDepth((*root),key);
+                        if(depth>2&&depth%2!=0){
+
+                            splay(&((*root)->left) ,key);
+                        }else{
+                            splay(&((*root)->left->left),key);
+                        }
+
+                    }
+
+
+
+
+
+                }
+
+
+            }
+
+
+                //rootun leftinin keyi ,keyden kucukse
+            else if((*root)->left->key <key){
+
+                //rootun solunun sagi null ise
+                if((*root)->left->right ==NULL){
+                    return ;
+                }
+                    //rootun solunun saci null degil ise
+                else {
+
+
+
+
+
+                    //rootun solunun saginin keyi, key e esitse
+                    if((*root)->left->right->key==key){
+
+                        (*root)->left = leftRotate((*root)->left);
+                        *root = rightRotate(*root);
+                    }
+
+                        //rootun solunun sagiinin keyi, key e esit degilse
+                    else{
+                        depth=0;
+                        depth= searchAndGetDepth((*root),key);
+
+                        if(depth>2&&depth%2!=0){
+                            splay(&((*root)->left) ,key);
+                        }else{
+                            splay(&((*root)->left->right) ,key);
+                        }
+
+                    }
+
+
+
+
+
+                }
+
+
+            }
+
+
+
+        }//ilk durum bitti
+            //key rootun keyinden buyukse key sagdaysa
+        else if(key > (*root)->key){
+            //rootun sagi nulsa
+            if((*root)->right ==NULL){
+                return;
+            }//rootun saginin keyi keye esitse
+            else if((*root)->right->key == key){
+
+                (*root) = leftRotate(*root);
+                return;//burayi sonradan koydum
+            }
+
+            //iki durum cikar
+
+            //rootun rightinin keyi ,keyden buyukse key solda
+            if((*root)->right->key>key){
+
+                //rootun saginin solu null ise
+                if((*root)->right->left ==NULL){
+                    return ;
+                }
+                    //rootun saginin solu null degil ise
+                else {
+
+
+
+                    //rootun saginin solunun keyi, key e esitse
+                    //Zig zag right left rotations
+                    //left->left idi düzelttim *********************
+                    if((*root)->right->left->key==key){
+
+                        (*root)->right = rightRotate((*root)->right);
+                        (*root) = leftRotate(*root);
+
+                    }
+
+                        //rootun saginin solunun keyi, key e esit degilse
+                    else{
+                        depth=0;
+                        depth= searchAndGetDepth((*root),key);
+
+                        if(depth>2&&depth%2!=0){
+                            splay(&((*root)->right) ,key);
+                        }else{
+                            splay(&((*root)->right->left),key);
+                        }
+
+                    }
+
+
+
+
+
+                }
+
+
+            }
+
+
+                //rootun rightinin keyi ,keyden kucukse key sagda
+            else if((*root)->right->key <key){
+
+                //rootun saginin sagi null ise
+                if((*root)->right->right ==NULL){
+                    return ;
+                }
+                    //rootun saginin sagi null degil ise
+                else {
+
+
+
+
+
+                    //rootun saginin saginin keyi, key e esitse zig zig left left
+                    if((*root)->right->right->key==key){
+
+                        (*root) = leftRotate((*root));
+                        *root = leftRotate(*root);
+                    }
+
+                        //rootun saginin sagiinin keyi, key e esit degilse
+                    else{
+                        depth=0;
+                        depth= searchAndGetDepth((*root),key);
+
+                        if(depth>2&&depth%2!=0){
+                            splay(&((*root)->right) ,key);
+                        }else{
+                            splay(&((*root)->right->right) ,key);
+                        }
+
+                    }
+
+
+
+
+
+                }
+
+
+            }
+
+
+
+        }
+
+    }//while end
+
+
 }
 
 

@@ -42,7 +42,11 @@ void writeTheOutputFile(SplayNodePtr root,int a);
 void insert(SplayNodePtr *root, int key);
 int searchAndGetDepth(SplayNodePtr root, int key);
 void insertAndSplay(SplayNodePtr *root,int key);
-int main(){
+
+
+	int main(){
+	
+	
 	depth=0;
 	numberOfRotations = 0;
 	numberOfComparisons = 0;

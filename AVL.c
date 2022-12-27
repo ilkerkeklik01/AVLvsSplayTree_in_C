@@ -42,6 +42,8 @@ void deleteNode(AVLNodePtr *root, int key);
 void insertFromFile(AVLNodePtr *root,FILE* file);
 void preOrderToFile(AVLNodePtr root);
 void writeTheOutputFile(AVLNodePtr root,int a);
+
+
 int main()
 {
 	numberOfRotations = 0;
@@ -319,6 +321,11 @@ void balanceTree(AVLNodePtr *node,int key)
     }
 }
 
+
+
+
+
+
 //this function insert a key unless Tree have the given key and then balances the tree if it is needed
 void insert(AVLNodePtr *node, int key)
 {
@@ -359,65 +366,6 @@ void insert(AVLNodePtr *node, int key)
 
 
 
-//inorder successor
-/*void deleteNode(AVLNodePtr *root, int key)
-{
-    // Step 1: Perform standard BST delete
-    if (*root == NULL)
-        return;
- 
-    // If the key to be deleted is smaller than the
-    // root's key, then it lies in left subtree
-    if (key < (*root)->key)
-        deleteNode(&(*root)->left, key);
- 
-    // If the key to be deleted is greater than the
-    // root's key, then it lies in right subtree
-    else if (key > (*root)->key)
-        deleteNode(&(*root)->right, key);
- 
-    // if key is same as root's key, then This is
-    // the node to be deleted
-    else
-    {
-        // node with only one child or no child
-        if (((*root)->left == NULL) || ((*root)->right == NULL))
-        {
-            AVLNodePtr temp = (*root)->left ? (*root)->left : (*root)->right;
- 
-            // No child case
-            if (temp == NULL)
-            {
-                temp = *root;
-                *root = NULL;
-            }
-            else // One child case
-            *(*root) = *temp; // Copy the contents of the non-empty child
- 
-            free(temp);
-        }
-        else
-        {
-            // node with two children: Get the inorder successor
-            // (smallest in the right subtree)
-            AVLNodePtr temp = findMin((*root)->right);
- 
-            // Copy the inorder successor's data to this node
-            (*root)->key = temp->key;
- 
-            // Delete the inorder successor
-            deleteNode(&(*root)->right, temp->key);
-        }
-    }
- 
-    
-    if (*root == NULL)
-      return;
- 
-    (*root)->height = 1 + max(height((*root)->left), height((*root)->right));
-    
-    balanceTree(root);
-}*/
 
 //inorder predecessor
 //deletes the given key from the tree if it is exist

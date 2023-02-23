@@ -68,7 +68,7 @@ SplayNodePtr search(SplayNodePtr root, int key) {
 	readFilePtr1 = fopen("input1.txt","r");
 	readFilePtr2 = fopen("input2.txt","r");
 
-	writeFilePtr = fopen("150120074_p2_output.txt","a");
+	writeFilePtr = fopen("output.txt","a");
 	
 	SplayNodePtr root = NULL;
 	

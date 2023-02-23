@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-//Ilker Keklik 150120074
+//Ilker Keklik 
 
 FILE *readFilePtr1; 
 FILE *readFilePtr2; 
@@ -33,16 +33,31 @@ SplayNodePtr leftRotate(SplayNodePtr node);
 SplayNodePtr rightRotate(SplayNodePtr node);
 void splay(SplayNodePtr *root, int key);
 int max(int a, int b);
-SplayNodePtr findMax(SplayNodePtr root);
-SplayNodePtr findMin(SplayNodePtr root);
+
 void preOrder(SplayNodePtr root);
 void insertFromFile(SplayNodePtr *root,FILE* file);
 void preOrderToFile(SplayNodePtr root);
 void writeTheOutputFile(SplayNodePtr root,int a);
-void insert(SplayNodePtr *root, int key);
+
 int searchAndGetDepth(SplayNodePtr root, int key);
 void insertAndSplay(SplayNodePtr *root,int key);
 
+int searchFactor;
+SplayNodePtr search(SplayNodePtr root, int key) {
+  searchFactor++;
+  if (root == NULL) {
+    printf("\n%d cannot found\n",key);
+	return NULL;
+  }else if(root->key==key){
+  	
+  	printf("\n%d found\n",key);
+  	return root;
+  }
+  else if(root->key>key) return search(root->left,key);
+  else if(root->key<key) return search(root->right,key);
+ 
+ 
+}
 
 	int main(){
 	
@@ -50,8 +65,8 @@ void insertAndSplay(SplayNodePtr *root,int key);
 	depth=0;
 	numberOfRotations = 0;
 	numberOfComparisons = 0;
-	readFilePtr1 = fopen("150120074_p2_input1.txt","r");
-	readFilePtr2 = fopen("150120074_p2_input2.txt","r");
+	readFilePtr1 = fopen("input1.txt","r");
+	readFilePtr2 = fopen("input2.txt","r");
 
 	writeFilePtr = fopen("150120074_p2_output.txt","a");
 	
@@ -105,6 +120,84 @@ void insertAndSplay(SplayNodePtr *root,int key);
 	insert(&root,19);
 	*/
 	
+	/*
+	 //search 1 
+ printf("\nsearch test 1\n");
+ search(root,78);
+ splay(&root, 78);
+ 
+ search(root,87);
+ splay(&root, 87);
+ search(root,4);
+ splay(&root, 4);
+ search(root,26);
+ splay(&root, 26);
+ search(root,47);
+ splay(&root, 47);
+ search(root,50);
+ splay(&root, 50);
+ search(root,50);
+ splay(&root, 50);
+ search(root,50);
+ splay(&root, 50);
+ search(root,50);
+ splay(&root, 50);
+ search(root,50);
+ splay(&root, 50);
+ 
+ printf("Search factor: %d",searchFactor);
+ searchFactor=0;
+ //search2 
+ printf("\nsearch test 2\n");
+ search(root,13);
+ splay(&root, 13);
+ search(root,96);
+ splay(&root, 96);
+ search(root,2);
+ splay(&root, 2);
+ search(root,45);
+ splay(&root, 45);
+ search(root,91);
+ splay(&root, 91);
+ search(root,77);
+ splay(&root, 77);
+ search(root,14);
+ splay(&root, 14);
+ search(root,50);
+ splay(&root, 50);
+ search(root,17);
+ splay(&root, 17);
+ search(root,49);
+ splay(&root,49 );
+ printf("Search factor: %d",searchFactor);
+  searchFactor=0;
+ //search3
+ printf("\nsearch test 3\n");
+ search(root,52);
+
+
+ search(root,99);
+
+ search(root,41);
+
+ search(root,6);
+
+ search(root,55);
+
+ search(root,100);
+
+ search(root,101);
+
+ search(root,102);
+
+ search(root,103);
+
+ search(root,104);
+
+ printf("Search factor: %d",searchFactor);
+ 
+	
+	*/
 	
 	fclose(writeFilePtr);
 	fclose(readFilePtr1);
@@ -113,9 +206,13 @@ void insertAndSplay(SplayNodePtr *root,int key);
 	return 0;
 }
 
-void insertAndSplay(SplayNodePtr *root,int key){//en son boyle yaptım hata aldım
+void insertAndSplay(SplayNodePtr *root,int key){
     insert(root,key);
-    splay(root,key);
+    
+
+	splay(root,key);	
+
+	
 }
 
 
@@ -153,7 +250,7 @@ int searchAndGetDepth(SplayNodePtr root, int key)
 {
     while( root->key != key){
           if(root==NULL){
-              if("beklenmedik hata");
+              if("unexpected error");
               return -1;
           }
           if(key>root->key){
@@ -190,7 +287,7 @@ void insertFromFile(SplayNodePtr *root,FILE* file){
 			}
 			
 			insertAndSplay(root,key);
-			printf("%d inserted\n",key);
+		
 			
 		}		
 }
@@ -201,7 +298,7 @@ void insert(SplayNodePtr *root, int key) {
     if (*root == NULL) {
     	//numberOfComparisons++;
         *root = newNode(key);
-        return;
+        return ;
     }
 
 
@@ -213,7 +310,7 @@ void insert(SplayNodePtr *root, int key) {
     	numberOfComparisons++;
 	}else{
 		numberOfComparisons++;
-        return;
+        return ;
     }
 
 }
@@ -468,26 +565,7 @@ SplayNodePtr leftRotate(SplayNodePtr a)
 	numberOfRotations++;
     return b;
 }
-//find the minimum key of the given tree and return it
-SplayNodePtr findMin(SplayNodePtr root)
-{
-    SplayNodePtr current = root;
- 
-    while (current->left != NULL)
-        current = current->left;
- 
-    return current;
-}
-//find the maximum key of the given tree and return it
-SplayNodePtr findMax(SplayNodePtr root)
-{
-    SplayNodePtr current = root;
- 
-    while (current->right != NULL)
-        current = current->right;
- 
-    return current;
-}
+
 
 int max(int a, int b)
 {

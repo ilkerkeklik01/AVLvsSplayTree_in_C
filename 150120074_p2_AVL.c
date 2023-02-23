@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Ilker Keklik 150120074 balance tree de sikinti var gibi (hallettim)
+// Ilker Keklik 
 
 FILE *readFilePtr1; 
 FILE *readFilePtr2; 
@@ -26,8 +26,7 @@ typedef enum boolean{
 }boolean;
 
 //Prototypes
-AVLNodePtr findMax(AVLNodePtr root);
-AVLNodePtr findMin(AVLNodePtr root);
+
 int height(AVLNodePtr N);
 int max(int a, int b);
 AVLNodePtr newNode(int key);
@@ -37,19 +36,41 @@ int getBalance(AVLNodePtr N);
 void balanceTree(AVLNodePtr *node,int key);
 void insert(AVLNodePtr *node, int key);
 void preOrder(AVLNodePtr root);
-AVLNodePtr search(AVLNodePtr root, int key);
-void deleteNode(AVLNodePtr *root, int key);
+
+
 void insertFromFile(AVLNodePtr *root,FILE* file);
 void preOrderToFile(AVLNodePtr root);
 void writeTheOutputFile(AVLNodePtr root,int a);
 
 
+int searchFactor;
+AVLNodePtr search(AVLNodePtr root, int key) {
+  searchFactor++;
+  if (root == NULL) {
+    printf("\n%d cannot found\n",key);
+	return NULL;
+  }else if(root->key==key){
+  	
+  	printf("\n%d found\n",key);
+  	return root;
+  }
+  else if(root->key>key) return search(root->left,key);
+  else if(root->key<key) return search(root->right,key);
+ 
+ 
+}
+
+
+
+
 int main()
 {
+
+	searchFactor=0;
 	numberOfRotations = 0;
 	numberOfComparisons = 0;
-	readFilePtr1 = fopen("150120074_p2_input1.txt","r");
-	readFilePtr2 = fopen("150120074_p2_input2.txt","r");
+	readFilePtr1 = fopen("input1.txt","r");
+	readFilePtr2 = fopen("input2.txt","r");
 
 	writeFilePtr = fopen("150120074_p2_output.txt","a");
 	
@@ -72,8 +93,8 @@ int main()
 	numberOfComparisons=0;
 	root=NULL;
  
- 	printf("AVL Tree");
-	printf("n\nTest2\n");
+ 	
+	printf("\nTest2\n");
 	insertFromFile(&root,readFilePtr2);
 	printf("\n");
 	preOrder(root);
@@ -82,68 +103,51 @@ int main()
 	printf("\n Cost: %d",(numberOfRotations+numberOfComparisons));
  
  writeTheOutputFile(root,2);
+ 
+ 
  /*
-    printf("Inserting keys: 10, 20, 30, 40, 50, 25\n");
-   
-    insert(&root, 10);
-    insert(&root, 20);
-    insert(&root, 30);
-    insert(&root, 40);
-    insert(&root, 50);
-    insert(&root, 25);
-	
-   insertFromFile(&root);
- 
-    printf("\nPreorder traversal of the tree: ");
-    preOrder(root);
- 
-    printf("\n\nDeleting key 30 \n");
-    deleteNode(&root, 30);
- 
-    printf("\nafter deletion 30: ");
-    preOrder(root);
- 
-    printf("\n\nInserting keys: 5, 55, 35, 45, 15, 75\n");
-    insert(&root, 5);
-    insert(&root, 55);
-    insert(&root, 35);
-    insert(&root, 45);
-    insert(&root, 15);
-    insert(&root, 75);
- 
-    printf("\nPreorder traversal : ");
-    preOrder(root);
- 
-    printf("\n\nDeleting key 55 \n");
-    deleteNode(&root, 55);
- 
-    printf("\nPreorder traversal : ");
-    preOrder(root);
- 
-    int key = 40;
-    printf("\n\nSearching for key %d: ", key);
-    AVLNodePtr result = search(root, key);
-    if (result == NULL)
-    {
-        printf("Key not found \n");
-    }
-    else
-    {
-        printf("Key found \n");
-    }
- 
-    printf("\nFinding minimum value: ");
-    AVLNodePtr min = findMin(root);
-    printf("%d\n", min->key);
- 
-    printf("Finding maximum value: ");
-    AVLNodePtr max = findMax(root);
-    printf("%d\n", max->key);
- 
- 
+ //search 1 
+ printf("\nsearch test 1\n");
+ search(root,78);
+ search(root,87);
+ search(root,4);
+ search(root,26);
+ search(root,47);
+ search(root,50);
+ search(root,50);
+ search(root,50);
+ search(root,50);
+ search(root,50);
+ printf("Search factor: %d",searchFactor);
+ searchFactor=0;
+ //search2 
+ printf("\nsearch test 2\n");
+ search(root,13);
+ search(root,96);
+ search(root,2);
+ search(root,45);
+ search(root,91);
+ search(root,77);
+ search(root,14);
+ search(root,50);
+ search(root,17);
+ search(root,49);
+ printf("Search factor: %d",searchFactor);
+  searchFactor=0;
+ //search3
+ printf("\nsearch test 3\n");
+ search(root,52);
+ search(root,99);
+ search(root,41);
+ search(root,6);
+ search(root,55);
+ search(root,100);
+ search(root,101);
+ search(root,102);
+ search(root,103);
+ search(root,104);
+ printf("Search factor: %d",searchFactor);
  */
- 
- 
  
  fclose(readFilePtr1);
  fclose(readFilePtr2);
@@ -199,7 +203,7 @@ void insertFromFile(AVLNodePtr *root,FILE* file){
 			}
 			
 			insert(root,key);
-			printf("%d inserted\n",key);
+			
 			
 		}
 		
@@ -208,26 +212,6 @@ void insertFromFile(AVLNodePtr *root,FILE* file){
 		
 		
 		
-}
-
-
-
-//search functions searchs the given value in the tree whose root is given
-AVLNodePtr search(AVLNodePtr root, int key)
-{
-    if (root == NULL || root->key == key){
-    numberOfComparisons++;
-	return root;	
-	}
-       
-       
-    
-    if (root->key < key){
-    	numberOfComparisons++;
-       return search(root->right, key);
-	}
- 	numberOfComparisons++;
-    return search(root->left, key);
 }
 
 //returns height of the tree whose root is given
@@ -298,22 +282,22 @@ void balanceTree(AVLNodePtr *node,int key)
 	
     int balance = getDf(*node);
 
-    // Left Left 
+    // Left heavy right rotation
     if (balance > 1 && (*node)->left->key>key )
         *node = rightRotate(*node);
 
-    // Right Right 
+    // Right heavy left rotation
     else if (balance < -1 && (*node)->right->key<key )
         *node = leftRotate(*node);
 
-    // Left Right 
+    // Left subtree Right heacy Left-Right rotation
     else if (balance > 1 && (*node)->left->key < key  )
     {
         (*node)->left =  leftRotate((*node)->left);
         *node = rightRotate(*node);
     }
 
-    // Right Left 
+    // Right subtree left heacy Right-Left rotation
     else if (balance < -1 && (*node)->right->key > key  )
     {
         (*node)->right = rightRotate((*node)->right);
@@ -334,7 +318,7 @@ void insert(AVLNodePtr *node, int key)
     {	
 //	numberOfComparisons++;					//buraya numberOfComparison++ koymicam sanirim
         *node = newNode(key);
-        printf("%d eklendi ",key);
+       
         return;
     }
 
@@ -365,100 +349,6 @@ void insert(AVLNodePtr *node, int key)
 }
 
 
-
-
-//inorder predecessor
-//deletes the given key from the tree if it is exist
-void deleteNode(AVLNodePtr *root, int key)
-{
-    if (*root == NULL){
-    	numberOfComparisons++;
-        return;//
-	}
- 
-    
-    else if (key < (*root)->key){
-    	numberOfComparisons++;
-        deleteNode(&(*root)->left, key);
-	}
- 
-
-    else if (key > (*root)->key){
-    	numberOfComparisons++;
-        deleteNode(&(*root)->right, key);
-	}
- 
-    //key is the root's key or we found the key to be deleted
-    else
-    {//
-   
-       	//case 1 : no child
-       	
-		if((*root)->left==NULL && (*root)->right==NULL) {
-			free((*root));
-			(*root)= NULL;
-			
-		}
-		
-		//case 2 : One child
-		
-		else if((*root)->left==NULL){
-			AVLNodePtr temp = *root;
-			*root = (*root)->right;
-			free(temp);
-			temp=NULL;
-			
-		}
-		else if((*root)->right==NULL){
-			AVLNodePtr temp = *root;
-			(*root) = (*root)->left;
-			free(temp);
-			temp=NULL;
-			
-		}
-	    else
-        {//
-            //2 children case swap with greatest in the left subtree
-           	//finding and deleting the inorder predecessor recursively
-            AVLNodePtr temp = findMax((*root)->left);
- 
-            
-            (*root)->key = temp->key;
- 
-            deleteNode(&(*root)->left, temp->key);
-        }
-    }
- 
-    // if there is nothing after the deletion no need to calculate height and balance the tree
-    if (*root == NULL)
-      return;
-      //update height all the accessed elements while deleting
-    (*root)->height = 1 + max(height((*root)->left), height((*root)->right));
- 
-    // Balance the tree if it is necessary
-    balanceTree(root,key);
-}
-
-//find the minimum key of the given tree and return it
-AVLNodePtr findMin(AVLNodePtr root)
-{
-    AVLNodePtr current = root;
- 
-    while (current->left != NULL)
-        current = current->left;
- 
-    return current;
-}
-//find the maximum key of the given tree and return it
-AVLNodePtr findMax(AVLNodePtr root)
-{
-    AVLNodePtr current = root;
- 
-    while (current->right != NULL)
-        current = current->right;
- 
-    return current;
-}
 
 
 
